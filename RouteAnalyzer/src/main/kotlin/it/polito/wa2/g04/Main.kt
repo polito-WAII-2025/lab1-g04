@@ -1,8 +1,8 @@
-package polito.it.wa2.g04.lab01
+package it.polito.wa2.g04
 
-import polito.it.wa2.g04.lab01.config.ConfigLoader
-import polito.it.wa2.g04.lab01.services.RouteAnalyzerService
-import polito.it.wa2.g04.lab01.utils.CSVParser
+import it.polito.wa2.g04.config.ConfigLoader
+import it.polito.wa2.g04.services.RouteAnalyzerService
+import it.polito.wa2.g04.utils.CSVParser
 
 fun main(args: Array<String>) {
 

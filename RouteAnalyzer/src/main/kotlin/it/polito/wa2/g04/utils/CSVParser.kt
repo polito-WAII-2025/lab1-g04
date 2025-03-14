@@ -1,6 +1,6 @@
-package polito.it.wa2.g04.lab01.utils
+package it.polito.wa2.g04.utils
 
-import polito.it.wa2.g04.lab01.models.Waypoint
+import it.polito.wa2.g04.models.Waypoint
 import java.io.File
 
 class CSVParser {

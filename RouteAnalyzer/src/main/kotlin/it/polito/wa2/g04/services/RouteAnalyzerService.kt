@@ -1,7 +1,7 @@
-package polito.it.wa2.g04.lab01.services
+package it.polito.wa2.g04.services
 
-import polito.it.wa2.g04.lab01.models.Waypoint
-import polito.it.wa2.g04.lab01.models.Geofence
+import it.polito.wa2.g04.models.Waypoint
+import it.polito.wa2.g04.models.Geofence
 
 class RouteAnalyzerService {
     fun calculateMaxDistanceFromStart(waypoints: List<Waypoint>): Double {

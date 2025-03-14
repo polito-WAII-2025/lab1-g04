@@ -1,4 +1,4 @@
-package polito.it.wa2.g04.lab01.models
+package it.polito.wa2.g04.models
 
 data class Waypoint(
     val timestamp: Double,
