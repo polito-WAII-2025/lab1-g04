@@ -8,7 +8,19 @@ import kotlin.math.*
 
 class RouteAnalyzerService(private val config: Config) {
     fun calculateMaxDistanceFromStart(waypoints: List<Waypoint>): Double {
-        throw unimplemented()
+        if (waypoints.isEmpty()) return 0.0
+
+        val origin = waypoints.first()
+        var maxDistance = 0.0
+
+        for (waypoint in waypoints) {
+            val distance = haversine(origin.lat, origin.lng, waypoint.lat, waypoint.lng)
+            if (distance > maxDistance) {
+                maxDistance = distance
+            }
+        }
+
+        return maxDistance
     }
 
     fun findMostFrequentedArea(waypoints: List<Waypoint>): Waypoint {
