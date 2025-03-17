@@ -13,7 +13,6 @@ object JsonProvider {
 }
 
 fun main(args: Array<String>) {
-
     val waypointsFilePath = args[0]
     val customParametersFilePath = args[1]
 
@@ -38,4 +37,3 @@ fun main(args: Array<String>) {
     val jsonString = JsonProvider.json.encodeToString(report)
     println(jsonString)
 }
-

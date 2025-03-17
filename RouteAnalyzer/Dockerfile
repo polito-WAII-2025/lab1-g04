@@ -5,8 +5,9 @@ FROM gradle:8.10-jdk23 AS build
 WORKDIR /app
 
 # Copy the Gradle configuration files and project source code
-COPY build.gradle.kts settings.gradle.kts ./
-COPY src ./src
+COPY build.gradle.kts settings.gradle.kts gradlew /app/
+COPY gradle /app/gradle
+COPY src /app/src
 
 # Download dependencies and build the project
 RUN gradle build --no-daemon
@@ -18,10 +19,11 @@ FROM openjdk:23-slim
 WORKDIR /app
 
 # Copy the built JAR from the previous step
-COPY --from=build /app/build/libs/*.jar /app/app.jar
+COPY --from=build /app/build/libs/*-all.jar /app/app.jar
 
 # Expose the application's port (if needed)
 EXPOSE 8081
 
 # Command to run the application
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "app.jar", "./inputFiles/waypoints.csv", "./inputFiles/custom-parameters.yml"]
+

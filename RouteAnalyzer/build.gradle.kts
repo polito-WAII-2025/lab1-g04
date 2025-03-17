@@ -5,7 +5,7 @@ plugins {
     application
 }
 
-group = "polito.it.wa2.g04.lab01"
+group = "it.polito.wa2.g04"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -24,7 +24,7 @@ tasks.test {
 
 tasks.jar {
     manifest {
-        attributes["Main-Class"]  = "com.polito.it.wa2.g04.lab01.MainKt"
+        attributes["Main-Class"]  = "it.polito.wa2.g04.MainKt"
     }
 }
 
@@ -33,5 +33,5 @@ kotlin {
 }
 
 application {
-    mainClass = "com.polito.it.wa2.g04.lab01.MainKt"
+    mainClass = "it.polito.wa2.g04.MainKt"
 }
