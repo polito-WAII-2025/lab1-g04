@@ -1,18 +1,18 @@
 package it.polito.wa2.g04
 
 import it.polito.wa2.g04.config.ConfigLoader
-import it.polito.wa2.g04.models.DataReport
+import it.polito.wa2.g04.models.output.*
 import it.polito.wa2.g04.models.Geofence
 import it.polito.wa2.g04.services.RouteAnalyzerService
 import it.polito.wa2.g04.utils.CSVParser
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-
-object JsonProvider {
-    val json: Json = Json { prettyPrint = true }
-}
+import it.polito.wa2.g04.utils.JSONProvider
 
 fun main(args: Array<String>) {
+
+    if (args.size != 2) {
+        throw IllegalArgumentException("Incorrect number of arguments")
+    }
+
     val waypointsFilePath = args[0]
     val customParametersFilePath = args[1]
 
@@ -29,11 +29,13 @@ fun main(args: Array<String>) {
     val maxDistance = routeAnalyzerService.calculateMaxDistanceFromStart(waypoints)
     val mostFrequented = routeAnalyzerService.findMostFrequentedArea(waypoints)
     val waypointsOutside = routeAnalyzerService.countWaypointsOutsideGeofence(waypoints, geofence)
-    val report = DataReport(
+    val dataReport = DataReport(
         maxDistanceFromStart = maxDistance,
         mostFrequentedArea = mostFrequented,
         waypointsOutsideGeofence = waypointsOutside
     )
-    val jsonString = JsonProvider.json.encodeToString(report)
+
+    val jsonProvider = JSONProvider()
+    val jsonString = jsonProvider.toString(dataReport)
     println(jsonString)
 }

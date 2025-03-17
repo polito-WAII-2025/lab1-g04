@@ -2,7 +2,7 @@ package it.polito.wa2.g04.services
 
 import kotlin.math.*
 import it.polito.wa2.g04.config.Config
-import it.polito.wa2.g04.models.*
+import it.polito.wa2.g04.models.output.*
 import it.polito.wa2.g04.models.Waypoint
 import it.polito.wa2.g04.models.Geofence
 
