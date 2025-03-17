@@ -1,33 +1,34 @@
 package it.polito.wa2.g04.services
 
 import it.polito.wa2.g04.config.Config
-import it.polito.wa2.g04.models.Waypoint
-import it.polito.wa2.g04.models.Geofence
+import it.polito.wa2.g04.models.*
 import jdk.vm.ci.common.JVMCIError.unimplemented
 import kotlin.math.*
 
 class RouteAnalyzerService(private val config: Config) {
-    fun calculateMaxDistanceFromStart(waypoints: List<Waypoint>): Double {
-        if (waypoints.isEmpty()) return 0.0
+    fun calculateMaxDistanceFromStart(waypoints: List<Waypoint>): MaxDistanceFromStart {
+        if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints list cannot be empty")
 
         val origin = waypoints.first()
         var maxDistance = 0.0
+        var farthestWaypoint = origin
 
         for (waypoint in waypoints) {
-            val distance = haversine(origin.lat, origin.lng, waypoint.lat, waypoint.lng)
+            val distance = haversine(origin.latitude, origin.longitude, waypoint.latitude, waypoint.longitude)
             if (distance > maxDistance) {
                 maxDistance = distance
+                farthestWaypoint = waypoint
             }
         }
 
-        return maxDistance
+        return MaxDistanceFromStart(farthestWaypoint, maxDistance)
     }
 
-    fun findMostFrequentedArea(waypoints: List<Waypoint>): Waypoint {
+    fun findMostFrequentedArea(waypoints: List<Waypoint>): MostFrequentedArea {
         throw unimplemented()
     }
 
-    fun countWaypointsOutsideGeofence(waypoints: List<Waypoint>, geofence: Geofence): Int {
+    fun countWaypointsOutsideGeofence(waypoints: List<Waypoint>, geofence: Geofence): WaypointsOutsideGeofence {
         throw unimplemented()
     }
 
@@ -39,7 +40,7 @@ class RouteAnalyzerService(private val config: Config) {
         val deltaLngRadians = Math.toRadians(lng2 - lng1)
 
         val a =
-            sin(deltaLatRadians / 2) * sin(deltaLatRadians / 2) + cos(lat1) * cos(lat2) * sin(deltaLngRadians / 2) * sin(
+            sin(deltaLatRadians / 2) * sin(deltaLatRadians / 2) + cos(lat1Radians) * cos(lat2Radians) * sin(deltaLngRadians / 2) * sin(
                 deltaLngRadians / 2
             )
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
