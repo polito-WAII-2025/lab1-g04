@@ -3,7 +3,6 @@ package it.polito.wa2.g04.services
 import kotlin.math.*
 import it.polito.wa2.g04.config.Config
 import it.polito.wa2.g04.models.*
-import jdk.vm.ci.common.JVMCIError.unimplemented
 import it.polito.wa2.g04.models.Waypoint
 import it.polito.wa2.g04.models.Geofence
 
@@ -32,12 +31,13 @@ class RouteAnalyzerService(private val config: Config) {
     }
 
     fun countWaypointsOutsideGeofence(waypoints: List<Waypoint>, geofence: Geofence): WaypointsOutsideGeofence {
-        /*
-        return waypoints.filter {
-            haversine(it.latitude, it.longitude, geofence.centerLat, geofence.centerLng) > geofence.radiusKm
+        val centralWaypoint = Waypoint(0.0, geofence.centerLat, geofence.centerLng)
+        val areaRadiusKm = geofence.radiusKm
+        val outsideWaypoints = waypoints.filter {
+            haversine(it.latitude, it.longitude, centralWaypoint.latitude, centralWaypoint.longitude) > areaRadiusKm
         }
 
-         */
+        return WaypointsOutsideGeofence(centralWaypoint, areaRadiusKm, outsideWaypoints.size, outsideWaypoints)
     }
 
     private fun haversine(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
