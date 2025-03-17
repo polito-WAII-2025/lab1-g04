@@ -6,7 +6,6 @@ import it.polito.wa2.g04.services.RouteAnalyzerService
 import it.polito.wa2.g04.utils.CSVParser
 
 fun main(args: Array<String>) {
-
     val waypointsFilePath = args[0]
     val customParametersFilePath = args[1]
 
@@ -19,5 +18,5 @@ fun main(args: Array<String>) {
     val routeAnalyzerService = RouteAnalyzerService(config)
 
     val geofence = Geofence(config.geofenceCenterLatitude, config.geofenceCenterLongitude, config.geofenceRadiusKm)
+    val includedWaypoints = routeAnalyzerService.countWaypointsOutsideGeofence(waypoints, geofence)
 }
-
