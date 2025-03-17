@@ -4,7 +4,6 @@ import kotlin.math.*
 import it.polito.wa2.g04.config.Config
 import it.polito.wa2.g04.models.*
 import jdk.vm.ci.common.JVMCIError.unimplemented
-import kotlin.math.*
 import it.polito.wa2.g04.models.Waypoint
 import it.polito.wa2.g04.models.Geofence
 
@@ -27,14 +26,18 @@ class RouteAnalyzerService(private val config: Config) {
         return MaxDistanceFromStart(farthestWaypoint, maxDistance)
     }
 
-    fun findMostFrequentedArea(waypoints: List<Waypoint>): Waypoint {
-        return Waypoint(1.0, 1.0, 1.0)
+    fun findMostFrequentedArea(waypoints: List<Waypoint>): MostFrequentedArea {
+        val wp = Waypoint(1.0, 1.0, 1.0)
+        return MostFrequentedArea(wp, 0.0, 0)
     }
 
-    fun countWaypointsOutsideGeofence(waypoints: List<Waypoint>, geofence: Geofence): List<Waypoint> {
+    fun countWaypointsOutsideGeofence(waypoints: List<Waypoint>, geofence: Geofence): WaypointsOutsideGeofence {
+        /*
         return waypoints.filter {
-            haversine(it.lat, it.lng, geofence.centerLat, geofence.centerLng) > geofence.radiusKm
+            haversine(it.latitude, it.longitude, geofence.centerLat, geofence.centerLng) > geofence.radiusKm
         }
+
+         */
     }
 
     private fun haversine(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
