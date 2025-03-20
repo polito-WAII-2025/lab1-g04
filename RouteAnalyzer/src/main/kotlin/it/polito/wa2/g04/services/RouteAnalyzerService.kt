@@ -29,8 +29,11 @@ class RouteAnalyzerService(private val config: Config) {
     fun findMostFrequentedArea(waypoints: List<Waypoint>): MostFrequentedArea {
         if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints list cannot be empty")
 
+        // If the most frequented area radius is not provided, calculate it
+        val mostFrequentedAreaRadiusKm = config.mostFrequentedAreaRadiusKm ?: calculateMaxDistanceFromStart(waypoints).distanceKm
+
         val h3 = H3Core.newInstance()
-        val resolution = calculateResolution(waypoints)
+        val resolution = calculateResolution(mostFrequentedAreaRadiusKm)
 
         // Map to count occurrences of each H3 cell
         val frequencyMap = mutableMapOf<Long, Int>()
@@ -57,7 +60,7 @@ class RouteAnalyzerService(private val config: Config) {
 
         val frequency = frequencyMap[mostFrequentedH3Index] ?: 0
 
-        return MostFrequentedArea(centralWaypoint, 0.0, frequency)
+        return MostFrequentedArea(centralWaypoint, mostFrequentedAreaRadiusKm, frequency)
     }
 
 
@@ -90,17 +93,19 @@ class RouteAnalyzerService(private val config: Config) {
         return distance
     }
 
-    private fun calculateResolution(waypoints: List<Waypoint>): Int {
-        if (waypoints.size < 2) throw IllegalArgumentException("At least two waypoints are required")
+    private fun calculateResolution(mostFrequentedAreaRadiusKm: Double): Int {
 
-        val distance = haversine(waypoints[0].latitude, waypoints[0].longitude, waypoints[1].latitude, waypoints[1].longitude)
 
-        return when {
-            distance < 0.1 -> 15 // 100 meters
-            distance < 1 -> 12 // 1 kilometer
-            distance < 2 -> 10 // 2 kilometers
-            distance < 5 -> 9 // 5 kilometers
-            else -> 7
+        return if (mostFrequentedAreaRadiusKm < 1) {
+            15
+        } else {
+            val radius = mostFrequentedAreaRadiusKm / 10
+            when {
+                radius < 1 -> 12 // 1 kilometer
+                radius < 2 -> 10 // 2 kilometers
+                radius < 5 -> 9 // 5 kilometers
+                else -> 7
+            }
         }
     }
 }
