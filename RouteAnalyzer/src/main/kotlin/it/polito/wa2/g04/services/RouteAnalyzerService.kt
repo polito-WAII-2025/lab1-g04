@@ -27,7 +27,7 @@ class RouteAnalyzerService(private val config: Config) {
     }
 
     fun findMostFrequentedArea(waypoints: List<Waypoint>): MostFrequentedArea {
-        if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints list cannot be emptys")
+        if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints list cannot be empty")
 
         val h3 = H3Core.newInstance()
         val resolution = calculateResolution(waypoints)
