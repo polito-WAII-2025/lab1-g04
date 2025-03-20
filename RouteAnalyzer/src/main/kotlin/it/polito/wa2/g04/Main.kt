@@ -10,7 +10,7 @@ import it.polito.wa2.g04.utils.JSONProvider
 fun main(args: Array<String>) {
 
     if (args.size != 2) {
-        throw IllegalArgumentException("Incorrect number of argumentss")
+        throw IllegalArgumentException("Incorrect number of arguments")
     }
 
     val waypointsFilePath = args[0]
