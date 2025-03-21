@@ -5,6 +5,10 @@ import it.polito.wa2.g04.config.Config
 import it.polito.wa2.g04.models.output.*
 import it.polito.wa2.g04.models.Waypoint
 import it.polito.wa2.g04.models.Geofence
+import com.uber.h3core.H3Core
+import com.uber.h3core.LengthUnit
+
+
 
 class RouteAnalyzerService(private val config: Config) {
     fun calculateMaxDistanceFromStart(waypoints: List<Waypoint>): MaxDistanceFromStart {
@@ -26,9 +30,45 @@ class RouteAnalyzerService(private val config: Config) {
     }
 
     fun findMostFrequentedArea(waypoints: List<Waypoint>): MostFrequentedArea {
-        val wp = Waypoint(1.0, 1.0, 1.0)
-        return MostFrequentedArea(wp, 0.0, 0)
+        if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints list cannot be empty")
+
+        // If the most frequented area radius is not provided, calculate it
+        val mostFrequentedAreaRadiusKm =
+            config.mostFrequentedAreaRadiusKm ?: calculateMaxDistanceFromStart(waypoints).distanceKm.let {
+                if (it < 1) 0.1 else floor(it / 10 * 10) / 10
+            }
+
+        val h3 = H3Core.newInstance()
+        val resolution = calculateResolution(mostFrequentedAreaRadiusKm,h3)
+
+        // Map to count occurrences of each H3 cell
+        val frequencyMap = mutableMapOf<Long, Int>()
+        val waypointsInCells = mutableMapOf<Long, MutableList<Waypoint>>()
+
+        for (waypoint in waypoints) {
+            val h3Index = h3.latLngToCell(waypoint.latitude, waypoint.longitude, resolution)
+            frequencyMap[h3Index] = frequencyMap.getOrDefault(h3Index, 0) + 1
+            waypointsInCells.computeIfAbsent(h3Index) { mutableListOf() }.add(waypoint)
+        }
+
+        // Find the most frequented H3 cell
+        val mostFrequentedH3Index = frequencyMap.maxByOrNull { it.value }?.key
+            ?: throw IllegalArgumentException("No waypoints provided")
+
+        // Calculate the centroid of the most frequented H3 cell
+        val centroid = h3.cellToLatLng(mostFrequentedH3Index)
+
+        // Find the waypoint closest to the centroid in the most frequented H3 cell
+        val waypointsInCell = waypointsInCells[mostFrequentedH3Index] ?: emptyList()
+        val centralWaypoint = waypointsInCell.minByOrNull { waypoint ->
+            haversine(centroid.lat, centroid.lng, waypoint.latitude, waypoint.longitude)
+        } ?: throw IllegalArgumentException("No waypoints provided")
+
+        val frequency = frequencyMap[mostFrequentedH3Index] ?: 0
+
+        return MostFrequentedArea(centralWaypoint, mostFrequentedAreaRadiusKm, frequency)
     }
+
 
     fun countWaypointsOutsideGeofence(waypoints: List<Waypoint>, geofence: Geofence): WaypointsOutsideGeofence {
         val centralWaypoint = Waypoint(0.0, geofence.centerLat, geofence.centerLng)
@@ -57,5 +97,31 @@ class RouteAnalyzerService(private val config: Config) {
         val distance = earthRadiusKm * c
 
         return distance
+    }
+
+    private fun calculateResolution(mostFrequentedAreaRadiusKm: Double, h3: H3Core): Int {
+
+
+        return if (mostFrequentedAreaRadiusKm < 1 && config.mostFrequentedAreaRadiusKm == null) {
+            10
+        } else {
+            // Calculate the desired edge length of the cell
+            var bestResolution = 0
+            var closestDiff = Double.MAX_VALUE
+
+            // Check available resolutions (0 - 10)
+            for (res in 0..10) {
+                // Get the edge length of the cell in km for the current resolution
+                val cellEdgeLength = h3.getHexagonEdgeLengthAvg(res, LengthUnit.km)
+                val diff = abs(cellEdgeLength - mostFrequentedAreaRadiusKm)
+                if (diff < closestDiff) {
+                    closestDiff = diff
+                    bestResolution = res
+                }else{
+                    break
+                }
+            }
+            bestResolution
+        }
     }
 }
