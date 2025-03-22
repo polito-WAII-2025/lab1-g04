@@ -12,7 +12,21 @@ import org.locationtech.jts.index.strtree.STRtree
 
 
 
+/**
+ * Service that provides various route analysis functions such as calculating maximum distance from the starting point,
+ * finding the most frequented area based on waypoints, and counting waypoints outside a defined geofence.
+ *
+ * @property config The configuration object containing parameters like Earth's radius and other route-specific settings.
+ */
 class RouteAnalyzerService(private val config: Config) {
+
+    /**
+     * Calculates the maximum distance from the starting point (first waypoint) to any other waypoint.
+     *
+     * @param waypoints A list of waypoints representing points on the route.
+     * @return An instance of [MaxDistanceFromStart] containing the farthest waypoint and the calculated maximum distance in kilometers.
+     * @throws IllegalArgumentException If the waypoints list is empty.
+     */
     fun calculateMaxDistanceFromStart(waypoints: List<Waypoint>): MaxDistanceFromStart {
         if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints list cannot be empty")
 
@@ -31,6 +45,14 @@ class RouteAnalyzerService(private val config: Config) {
         return MaxDistanceFromStart(farthestWaypoint, maxDistance)
     }
 
+    /**
+     * Finds the most frequented area based on waypoints, using H3 indexing for spatial clustering.
+     *
+     * @param waypoints A list of waypoints representing points on the route.
+     * @return An instance of [MostFrequentedArea] containing the central waypoint of the most frequented area,
+     *         the area radius, and the frequency of visits to that area.
+     * @throws IllegalArgumentException If the waypoints list is empty or no waypoints are provided.
+     */
     fun findMostFrequentedArea(waypoints: List<Waypoint>): MostFrequentedArea {
         if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints list cannot be empty")
 
@@ -41,7 +63,7 @@ class RouteAnalyzerService(private val config: Config) {
             }
 
         val h3 = H3Core.newInstance()
-        val resolution = calculateResolution(mostFrequentedAreaRadiusKm,h3)
+        val resolution = calculateResolution(mostFrequentedAreaRadiusKm, h3)
 
         // Map to count occurrences of each H3 cell
         val frequencyMap = mutableMapOf<Long, Int>()
@@ -113,6 +135,14 @@ class RouteAnalyzerService(private val config: Config) {
     }
 
 
+    /**
+     * Counts the number of waypoints that lie outside a specified geofence.
+     *
+     * @param waypoints A list of waypoints representing points on the route.
+     * @param geofence A [Geofence] object specifying the central location and radius of the geofence.
+     * @return An instance of [WaypointsOutsideGeofence] containing the central waypoint of the geofence,
+     *         the geofence radius, and the list of waypoints found outside the geofence.
+     */
     fun countWaypointsOutsideGeofence(waypoints: List<Waypoint>, geofence: Geofence): WaypointsOutsideGeofence {
         val centralWaypoint = Waypoint(0.0, geofence.centerLat, geofence.centerLng)
         val areaRadiusKm = geofence.radiusKm
@@ -123,6 +153,15 @@ class RouteAnalyzerService(private val config: Config) {
         return WaypointsOutsideGeofence(centralWaypoint, areaRadiusKm, outsideWaypoints.size, outsideWaypoints)
     }
 
+    /**
+     * Calculates the Haversine distance between two geographic coordinates.
+     *
+     * @param lat1 Latitude of the first point.
+     * @param lng1 Longitude of the first point.
+     * @param lat2 Latitude of the second point.
+     * @param lng2 Longitude of the second point.
+     * @return The distance between the two points in kilometers.
+     */
     private fun haversine(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
         val earthRadiusKm = config.earthRadiusKM
         val lat1Radians = Math.toRadians(lat1)
@@ -130,21 +169,25 @@ class RouteAnalyzerService(private val config: Config) {
         val deltaLatRadians = Math.toRadians(lat2 - lat1)
         val deltaLngRadians = Math.toRadians(lng2 - lng1)
 
-        val a =
-            sin(deltaLatRadians / 2) * sin(deltaLatRadians / 2) + cos(lat1Radians) * cos(lat2Radians) * sin(
-                deltaLngRadians / 2
-            ) * sin(
-                deltaLngRadians / 2
-            )
+        val a = sin(deltaLatRadians / 2) * sin(deltaLatRadians / 2) + cos(lat1Radians) * cos(lat2Radians) * sin(
+            deltaLngRadians / 2
+        ) * sin(
+            deltaLngRadians / 2
+        )
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
         val distance = earthRadiusKm * c
 
         return distance
     }
 
+    /**
+     * Calculates the appropriate H3 resolution for the most frequented area radius.
+     *
+     * @param mostFrequentedAreaRadiusKm The radius of the most frequented area in kilometers.
+     * @param h3 An instance of [H3Core] for spatial indexing.
+     * @return The best-fitting H3 resolution for the given radius.
+     */
     private fun calculateResolution(mostFrequentedAreaRadiusKm: Double, h3: H3Core): Int {
-
-
         return if (mostFrequentedAreaRadiusKm < 1 && config.mostFrequentedAreaRadiusKm == null) {
             10
         } else {
@@ -160,7 +203,7 @@ class RouteAnalyzerService(private val config: Config) {
                 if (diff < closestDiff) {
                     closestDiff = diff
                     bestResolution = res
-                }else{
+                } else {
                     break
                 }
             }
