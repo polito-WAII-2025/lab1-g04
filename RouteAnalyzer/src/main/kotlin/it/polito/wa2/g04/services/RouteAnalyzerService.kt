@@ -74,44 +74,42 @@ class RouteAnalyzerService(private val config: Config) {
     fun findIntersections(waypoints: List<Waypoint>) {
         val geometryFactory = GeometryFactory()
 
+
         // Creazione segmenti tra waypoint consecutivi
         val segments = waypoints.zipWithNext { p1, p2 ->
             geometryFactory.createLineString(
-                arrayOf(Coordinate(p1.longitude, p1.latitude), Coordinate(p2.longitude, p2.latitude))
+                arrayOf(Coordinate(p1.latitude, p1.longitude), Coordinate(p2.latitude, p2.longitude))
             )
         }
 
-        // STRtree per indicizzare i segmenti
+
+        // Creazione di un R-tree per indicizzare i segmenti
         val rtree = STRtree()
         segments.forEachIndexed { index, segment ->
-            rtree.insert(segment.envelopeInternal, Pair(index, segment))
+            rtree.insert(segment.envelopeInternal, index to segment)
         }
 
-        // Lista delle intersezioni trovate
-        val intersezioni = mutableListOf<Pair<LineString, LineString>>()
+        val uniqueIntersections = mutableSetOf<Set<LineString>>() // Usiamo un Set per evitare duplicati
 
         // Controlliamo le intersezioni evitando segmenti consecutivi
         for ((index, segment) in segments.withIndex()) {
             val candidates = rtree.query(segment.envelopeInternal).filterIsInstance<Pair<Int, LineString>>()
+
             for ((candIndex, candidate) in candidates) {
-                if (candIndex <= index + 1 && candIndex >= index - 1) continue // Escludiamo segmenti consecutivi
+                if (candIndex == index || candIndex == index - 1 || candIndex == index + 1) continue // Escludiamo segmenti consecutivi
+
                 if (segment.intersects(candidate)) {
-                    intersezioni.add(segment to candidate)
+                    val intersectionPair = setOf(segment, candidate) // Set elimina la distinzione tra (A, B) e (B, A)
+                    if (uniqueIntersections.add(intersectionPair)) {
+                        println("Intersection found:")
+                        println("Index 1: $index, Segment 1: ${segment.toText()}")
+                        println("Index 2: $candIndex, Segment 2: ${candidate.toText()}")
+                        println("-----")
+                    }
                 }
             }
         }
-
-        // Stampiamo le intersezioni trovate
-        if (intersezioni.isEmpty()) {
-            println("Nessuna intersezione trovata.")
-        } else {
-            println("Segmenti che si intersecano:")
-            for ((s1, s2) in intersezioni) {
-                println("${s1.coordinates.toList()} ⟷ ${s2.coordinates.toList()}")
-            }
-        }
     }
-
 
     fun countWaypointsOutsideGeofence(waypoints: List<Waypoint>, geofence: Geofence): WaypointsOutsideGeofence {
         val centralWaypoint = Waypoint(0.0, geofence.centerLat, geofence.centerLng)
