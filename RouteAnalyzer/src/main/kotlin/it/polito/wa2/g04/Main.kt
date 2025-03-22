@@ -35,6 +35,8 @@ fun main(args: Array<String>) {
         waypointsOutsideGeofence = waypointsOutside
     )
 
+    routeAnalyzerService.findIntersections(waypoints)
+
     val jsonProvider = JSONProvider()
     val jsonString = jsonProvider.toString(dataReport)
     println(jsonString)

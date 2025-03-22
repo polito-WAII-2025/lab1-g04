@@ -7,6 +7,8 @@ import it.polito.wa2.g04.models.Waypoint
 import it.polito.wa2.g04.models.Geofence
 import com.uber.h3core.H3Core
 import com.uber.h3core.LengthUnit
+import org.locationtech.jts.geom.*
+import org.locationtech.jts.index.strtree.STRtree
 
 
 
@@ -67,6 +69,47 @@ class RouteAnalyzerService(private val config: Config) {
         val frequency = frequencyMap[mostFrequentedH3Index] ?: 0
 
         return MostFrequentedArea(centralWaypoint, mostFrequentedAreaRadiusKm, frequency)
+    }
+
+    fun findIntersections(waypoints: List<Waypoint>) {
+        val geometryFactory = GeometryFactory()
+
+        // Creazione segmenti tra waypoint consecutivi
+        val segments = waypoints.zipWithNext { p1, p2 ->
+            geometryFactory.createLineString(
+                arrayOf(Coordinate(p1.longitude, p1.latitude), Coordinate(p2.longitude, p2.latitude))
+            )
+        }
+
+        // STRtree per indicizzare i segmenti
+        val rtree = STRtree()
+        segments.forEachIndexed { index, segment ->
+            rtree.insert(segment.envelopeInternal, Pair(index, segment))
+        }
+
+        // Lista delle intersezioni trovate
+        val intersezioni = mutableListOf<Pair<LineString, LineString>>()
+
+        // Controlliamo le intersezioni evitando segmenti consecutivi
+        for ((index, segment) in segments.withIndex()) {
+            val candidates = rtree.query(segment.envelopeInternal).filterIsInstance<Pair<Int, LineString>>()
+            for ((candIndex, candidate) in candidates) {
+                if (candIndex <= index + 1 && candIndex >= index - 1) continue // Escludiamo segmenti consecutivi
+                if (segment.intersects(candidate)) {
+                    intersezioni.add(segment to candidate)
+                }
+            }
+        }
+
+        // Stampiamo le intersezioni trovate
+        if (intersezioni.isEmpty()) {
+            println("Nessuna intersezione trovata.")
+        } else {
+            println("Segmenti che si intersecano:")
+            for ((s1, s2) in intersezioni) {
+                println("${s1.coordinates.toList()} ⟷ ${s2.coordinates.toList()}")
+            }
+        }
     }
 
 
