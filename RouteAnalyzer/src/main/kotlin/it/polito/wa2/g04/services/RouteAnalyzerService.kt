@@ -162,7 +162,7 @@ class RouteAnalyzerService(private val config: Config) {
      * @return The distance between the two points in kilometers.
      */
     private fun haversine(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
-        val earthRadiusKm = config.earthRadiusKM
+        val earthRadiusKm = config.earthRadiusKm
         val lat1Radians = Math.toRadians(lat1)
         val lat2Radians = Math.toRadians(lat2)
         val deltaLatRadians = Math.toRadians(lat2 - lat1)
