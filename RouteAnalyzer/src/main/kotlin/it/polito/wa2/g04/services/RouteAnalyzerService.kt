@@ -93,35 +93,41 @@ class RouteAnalyzerService(private val config: Config) {
         return MostFrequentedArea(centralWaypoint, mostFrequentedAreaRadiusKm, frequency)
     }
 
+    /**
+     * Finds intersections between non-consecutive segments created from a list of waypoints.
+     *
+     * @param waypoints A list of waypoints representing points on the route.
+     * @throws IllegalArgumentException If the waypoints list is null or empty.
+     */
     fun findIntersections(waypoints: List<Waypoint>) {
+        require(waypoints.isNotEmpty()) { "Waypoints list cannot be null or empty" }
+
         val geometryFactory = GeometryFactory()
 
-
-        // Creazione segmenti tra waypoint consecutivi
+        // Create segments between consecutive waypoints
         val segments = waypoints.zipWithNext { p1, p2 ->
             geometryFactory.createLineString(
                 arrayOf(Coordinate(p1.latitude, p1.longitude), Coordinate(p2.latitude, p2.longitude))
             )
         }
 
-
-        // Creazione di un R-tree per indicizzare i segmenti
+        // Create an R-tree to index the segments
         val rtree = STRtree()
         segments.forEachIndexed { index, segment ->
             rtree.insert(segment.envelopeInternal, index to segment)
         }
 
-        val uniqueIntersections = mutableSetOf<Set<LineString>>() // Usiamo un Set per evitare duplicati
+        val uniqueIntersections = mutableSetOf<Set<LineString>>() // Use a Set to avoid duplicates
 
-        // Controlliamo le intersezioni evitando segmenti consecutivi
+        // Check for intersections while avoiding consecutive segments
         for ((index, segment) in segments.withIndex()) {
             val candidates = rtree.query(segment.envelopeInternal).filterIsInstance<Pair<Int, LineString>>()
 
             for ((candIndex, candidate) in candidates) {
-                if (candIndex == index || candIndex == index - 1 || candIndex == index + 1) continue // Escludiamo segmenti consecutivi
+                if (candIndex == index || candIndex == index - 1 || candIndex == index + 1) continue // Skip consecutive segments
 
                 if (segment.intersects(candidate)) {
-                    val intersectionPair = setOf(segment, candidate) // Set elimina la distinzione tra (A, B) e (B, A)
+                    val intersectionPair = setOf(segment, candidate) // Set eliminates distinction between (A, B) and (B, A)
                     if (uniqueIntersections.add(intersectionPair)) {
                         println("Intersection found:")
                         println("Index 1: $index, Segment 1: ${segment.toText()}")
