@@ -25,5 +25,5 @@ COPY --from=build /app/build/libs/*-all.jar /app/app.jar
 EXPOSE 8081
 
 # Command to run the application
-CMD ["java", "-jar", "app.jar", "./inputFiles/waypoints.csv", "./inputFiles/custom-parameters.yml"]
+CMD ["java", "-jar", "app.jar", "./inputFiles/waypoints.csv", "./inputFiles/custom-parameters.yml", "./outputFiles/"]
 
