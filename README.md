@@ -16,4 +16,4 @@ On a terminal:
 On a terminal:
 
 - <code>cd RouteAnalyzer</code>
-- <code>docker run -d -p 3003:80 -v <Input path>:/app/inputFiles/ -v <Output path>:/app/outputFiles route-analyzer</code>
+- <code>docker run -d -p 3003:80 -v \<Input path>:/app/inputFiles/ -v \<Output path>:/app/outputFiles route-analyzer</code>
