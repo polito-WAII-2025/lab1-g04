@@ -10,13 +10,14 @@ import java.io.File
 
 fun main(args: Array<String>) {
 
-    if (args.size != 3) {
+    if (args.size != 4) {
         throw IllegalArgumentException("Incorrect number of arguments")
     }
 
     val waypointsFilePath = args[0]
     val customParametersFilePath = args[1]
     val outputFilePath = args[2]
+    val outputAdvancedFilePath = args[3]
 
     val csvParser = CSVParser()
     val configLoader = ConfigLoader()
@@ -45,4 +46,7 @@ fun main(args: Array<String>) {
 
     val outFile = File(outputFilePath)
     outFile.writeText(jsonString)
+
+    val outFileAdvanced = File(outputAdvancedFilePath)
+    outFileAdvanced.writeText(jsonString)   // This should be replaced with the correct JSON string
 }
