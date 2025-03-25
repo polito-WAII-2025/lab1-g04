@@ -33,10 +33,13 @@ fun main(args: Array<String>) {
     val maxDistance = routeAnalyzerService.calculateMaxDistanceFromStart(waypoints)
     val mostFrequented = routeAnalyzerService.findMostFrequentedArea(waypoints)
     val waypointsOutside = routeAnalyzerService.countWaypointsOutsideGeofence(waypoints, geofence)
+    val intersectionList = routeAnalyzerService.findIntersections(waypoints)
+
+
     val dataReport = DataReport(
         maxDistanceFromStart = maxDistance,
         mostFrequentedArea = mostFrequented,
-        waypointsOutsideGeofence = waypointsOutside
+        waypointsOutsideGeofence = waypointsOutside,
     )
 
     val straightLineDistance = routeAnalyzerService.calculateStraightLineDistance(waypoints)
@@ -45,7 +48,6 @@ fun main(args: Array<String>) {
         //intersections = intersections,
         straightLineDistance = straightLineDistance
     )
-
 
     val jsonProvider = JSONProvider()
     var jsonString = jsonProvider.toString(dataReport)
