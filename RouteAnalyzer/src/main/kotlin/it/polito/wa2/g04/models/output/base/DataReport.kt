@@ -1,4 +1,4 @@
-package it.polito.wa2.g04.models.output
+package it.polito.wa2.g04.models.output.base
 
 import kotlinx.serialization.Serializable
 

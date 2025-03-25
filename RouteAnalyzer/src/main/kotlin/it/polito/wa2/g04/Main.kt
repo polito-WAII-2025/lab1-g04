@@ -1,8 +1,8 @@
 package it.polito.wa2.g04
 
 import it.polito.wa2.g04.config.ConfigLoader
-import it.polito.wa2.g04.models.output.*
 import it.polito.wa2.g04.models.Geofence
+import it.polito.wa2.g04.models.output.base.DataReport
 import it.polito.wa2.g04.services.RouteAnalyzerService
 import it.polito.wa2.g04.utils.CSVParser
 import it.polito.wa2.g04.utils.JSONProvider

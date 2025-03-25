@@ -2,11 +2,13 @@ package it.polito.wa2.g04.services
 
 import kotlin.math.*
 import it.polito.wa2.g04.config.Config
-import it.polito.wa2.g04.models.output.*
 import it.polito.wa2.g04.models.Waypoint
 import it.polito.wa2.g04.models.Geofence
 import com.uber.h3core.H3Core
 import com.uber.h3core.LengthUnit
+import it.polito.wa2.g04.models.output.base.MaxDistanceFromStart
+import it.polito.wa2.g04.models.output.base.MostFrequentedArea
+import it.polito.wa2.g04.models.output.base.WaypointsOutsideGeofence
 import org.locationtech.jts.geom.*
 import org.locationtech.jts.index.strtree.STRtree
 
