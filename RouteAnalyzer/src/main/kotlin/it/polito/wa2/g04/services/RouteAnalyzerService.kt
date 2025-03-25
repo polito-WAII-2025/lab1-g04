@@ -209,4 +209,27 @@ class RouteAnalyzerService(private val config: Config) {
             bestResolution
         }
     }
+
+    /**
+     * Calculates the sum of the distances between every waypoint
+     * Please note: this metric has nothing to do with the length of the path to reach every waypoint,
+     * it only sums the straight-line distances between each point
+     *
+     * @param waypoints A list of waypoints representing points on the route.
+     * @return Total distance in km between every waypoint
+     */
+    fun calculateStraightLineDistance(waypoints: List<Waypoint>): Double {
+        if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints is empty")
+
+        val numWaypoints = waypoints.size
+        var totalDistance = 0.0
+
+        for (i in 0..numWaypoints - 2) {
+            val start = waypoints[i]
+            val end = waypoints[i + 1]
+            totalDistance += haversine(start.latitude, start.longitude, end.latitude, end.longitude)
+        }
+
+        return totalDistance
+    }
 }

@@ -43,6 +43,7 @@ fun main(args: Array<String>) {
     val jsonProvider = JSONProvider()
     val jsonString = jsonProvider.toString(dataReport)
     println(jsonString)
+    println(routeAnalyzerService.calculateStraightLineDistance(waypoints))
 
     val outFile = File(outputFilePath)
     outFile.writeText(jsonString)
