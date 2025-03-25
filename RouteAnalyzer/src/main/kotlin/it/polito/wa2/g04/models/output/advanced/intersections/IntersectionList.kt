@@ -1,4 +1,4 @@
-package it.polito.wa2.g04.models.output.advanced
+package it.polito.wa2.g04.models.output.advanced.intersections
 
 import kotlinx.serialization.Serializable
 
