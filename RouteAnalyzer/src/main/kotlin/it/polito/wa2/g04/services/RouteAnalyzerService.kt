@@ -62,16 +62,19 @@ class RouteAnalyzerService(private val config: Config) {
         if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints list cannot be empty")
 
         val h3EarthRadiusKm = 6378.137
-        val scalingFactor =  config.earthRadiusKm / h3EarthRadiusKm
+        val scalingFactor =  h3EarthRadiusKm / config.earthRadiusKm
 
         // If the most frequented area radius is not provided, calculate it
         val mostFrequentedAreaRadiusKm =
             config.mostFrequentedAreaRadiusKm ?: calculateMaxDistanceFromStart(waypoints).distanceKm.let {
                 if (it < 1) 0.1 else floor(it / 10 * 10) / 10
             }
+        val scaledMostFrequentedAreaRadiusKm = (mostFrequentedAreaRadiusKm * scalingFactor).let {
+            floor(it * 10) / 10
+        }
 
         val h3 = H3Core.newInstance()
-        val resolution = calculateResolution(mostFrequentedAreaRadiusKm, h3)
+        val resolution = calculateResolution(scaledMostFrequentedAreaRadiusKm, h3)
 
         // Map to count occurrences of each H3 cell
         val frequencyMap = mutableMapOf<Long, Int>()
