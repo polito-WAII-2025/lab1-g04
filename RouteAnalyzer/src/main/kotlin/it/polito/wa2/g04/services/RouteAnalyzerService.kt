@@ -2,11 +2,13 @@ package it.polito.wa2.g04.services
 
 import kotlin.math.*
 import it.polito.wa2.g04.config.Config
-import it.polito.wa2.g04.models.output.*
 import it.polito.wa2.g04.models.Waypoint
 import it.polito.wa2.g04.models.Geofence
 import com.uber.h3core.H3Core
 import com.uber.h3core.LengthUnit
+import it.polito.wa2.g04.models.output.base.MaxDistanceFromStart
+import it.polito.wa2.g04.models.output.base.MostFrequentedArea
+import it.polito.wa2.g04.models.output.base.WaypointsOutsideGeofence
 import org.locationtech.jts.geom.*
 import org.locationtech.jts.index.strtree.STRtree
 
@@ -168,7 +170,7 @@ class RouteAnalyzerService(private val config: Config) {
      * @return The distance between the two points in kilometers.
      */
     private fun haversine(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
-        val earthRadiusKm = config.earthRadiusKM
+        val earthRadiusKm = config.earthRadiusKm
         val lat1Radians = Math.toRadians(lat1)
         val lat2Radians = Math.toRadians(lat2)
         val deltaLatRadians = Math.toRadians(lat2 - lat1)

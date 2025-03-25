@@ -16,5 +16,4 @@ On a terminal:
 On a terminal:
 
 - <code>cd RouteAnalyzer</code>
-- <code>docker run -d -p 3003:80 -v \<Path to waypoints.csv\>:/app/inputFiles/waypoints.csv -v \<Path to
-  custom-parameters.yml\>:/app/inputFiles/custom-parameters.yml route-analyzer</code>
+- <code>docker run -d -p 3003:80 -v \<Input path>:/app/inputFiles/ -v \<Output path>:/app/outputFiles route-analyzer</code>
