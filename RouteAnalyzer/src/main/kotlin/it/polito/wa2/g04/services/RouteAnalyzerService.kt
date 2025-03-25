@@ -4,12 +4,12 @@ import kotlin.math.*
 import it.polito.wa2.g04.config.Config
 import it.polito.wa2.g04.models.Waypoint
 import it.polito.wa2.g04.models.Geofence
-import it.polito.wa2.g04.models.output.advanced.Intersection
-import it.polito.wa2.g04.models.output.advanced.Segment
+import it.polito.wa2.g04.models.output.advanced.intersections.Intersection
+import it.polito.wa2.g04.models.output.advanced.intersections.Segment
 import com.uber.h3core.H3Core
 import com.uber.h3core.LengthUnit
 import it.polito.wa2.g04.models.output.advanced.StraightLineDistance
-import it.polito.wa2.g04.models.output.advanced.IntersectionList
+import it.polito.wa2.g04.models.output.advanced.intersections.IntersectionList
 import it.polito.wa2.g04.models.output.base.MaxDistanceFromStart
 import it.polito.wa2.g04.models.output.base.MostFrequentedArea
 import it.polito.wa2.g04.models.output.base.WaypointsOutsideGeofence
@@ -70,7 +70,7 @@ class RouteAnalyzerService(private val config: Config) {
             config.mostFrequentedAreaRadiusKm ?: calculateMaxDistanceFromStart(waypoints).distanceKm.let {
                 if (it < 1) 0.1 else floor(it / 10 * 10) / 10
             }
-        val scaledMostFrequentedAreaRadiusKm = (mostFrequentedAreaRadiusKm * scalingFactor).let {
+        val scaledMostFrequentedAreaRadiusKm = (mostFrequentedAreaRadiusKm / scalingFactor).let {
             floor(it * 10) / 10
         }
 
