@@ -4,8 +4,11 @@ import kotlin.math.*
 import it.polito.wa2.g04.config.Config
 import it.polito.wa2.g04.models.Waypoint
 import it.polito.wa2.g04.models.Geofence
+import it.polito.wa2.g04.models.output.advanced.Intersection
+import it.polito.wa2.g04.models.output.advanced.Segment
 import com.uber.h3core.H3Core
 import com.uber.h3core.LengthUnit
+import it.polito.wa2.g04.models.output.advanced.IntersectionList
 import it.polito.wa2.g04.models.output.base.MaxDistanceFromStart
 import it.polito.wa2.g04.models.output.base.MostFrequentedArea
 import it.polito.wa2.g04.models.output.base.WaypointsOutsideGeofence
@@ -58,6 +61,9 @@ class RouteAnalyzerService(private val config: Config) {
     fun findMostFrequentedArea(waypoints: List<Waypoint>): MostFrequentedArea {
         if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints list cannot be empty")
 
+        val h3EarthRadiusKm = 6378.137
+        val scalingFactor =  config.earthRadiusKm / h3EarthRadiusKm
+
         // If the most frequented area radius is not provided, calculate it
         val mostFrequentedAreaRadiusKm =
             config.mostFrequentedAreaRadiusKm ?: calculateMaxDistanceFromStart(waypoints).distanceKm.let {
@@ -99,17 +105,26 @@ class RouteAnalyzerService(private val config: Config) {
      * Finds intersections between non-consecutive segments created from a list of waypoints.
      *
      * @param waypoints A list of waypoints representing points on the route.
+     * @return An instance of [IntersectionList] containing a list of intersections between segments.
      * @throws IllegalArgumentException If the waypoints list is null or empty.
      */
-    fun findIntersections(waypoints: List<Waypoint>) {
+    fun findIntersections(waypoints: List<Waypoint>): IntersectionList {
         require(waypoints.isNotEmpty()) { "Waypoints list cannot be null or empty" }
 
         val geometryFactory = GeometryFactory()
 
         // Create segments between consecutive waypoints
+        val coordinateToTimestamp = mutableMapOf<Pair<Double, Double>, Double>()
+
         val segments = waypoints.zipWithNext { p1, p2 ->
+            coordinateToTimestamp[p1.latitude to p1.longitude] = p1.timestamp
+            coordinateToTimestamp[p2.latitude to p2.longitude] = p2.timestamp
+
             geometryFactory.createLineString(
-                arrayOf(Coordinate(p1.latitude, p1.longitude), Coordinate(p2.latitude, p2.longitude))
+                arrayOf(
+                    CoordinateXY(p1.latitude, p1.longitude),
+                    CoordinateXY(p2.latitude, p2.longitude)
+                )
             )
         }
 
@@ -119,7 +134,9 @@ class RouteAnalyzerService(private val config: Config) {
             rtree.insert(segment.envelopeInternal, index to segment)
         }
 
+
         val uniqueIntersections = mutableSetOf<Set<LineString>>() // Use a Set to avoid duplicates
+        val intersections = mutableListOf<Intersection>()
 
         // Check for intersections while avoiding consecutive segments
         for ((index, segment) in segments.withIndex()) {
@@ -131,14 +148,25 @@ class RouteAnalyzerService(private val config: Config) {
                 if (segment.intersects(candidate)) {
                     val intersectionPair = setOf(segment, candidate) // Set eliminates distinction between (A, B) and (B, A)
                     if (uniqueIntersections.add(intersectionPair)) {
-                        println("Intersection found:")
-                        println("Index 1: $index, Segment 1: ${segment.toText()}")
-                        println("Index 2: $candIndex, Segment 2: ${candidate.toText()}")
-                        println("-----")
+                        val intersectionPoint = segment.intersection(candidate).coordinate
+                        val intersection = Intersection(
+                            intersectionPoint = Waypoint(0.0,intersectionPoint.y, intersectionPoint.x, ),
+                            segment1 = Segment(
+                                Waypoint(coordinateToTimestamp[segment.startPoint.y to segment.startPoint.x] ?: 0.0, segment.startPoint.y, segment.startPoint.x),
+                                Waypoint(coordinateToTimestamp[segment.endPoint.y to segment.endPoint.x] ?: 0.0, segment.endPoint.y, segment.endPoint.x)
+                            ),
+                            segment2 = Segment(
+                                Waypoint(coordinateToTimestamp[candidate.startPoint.y to candidate.startPoint.x] ?: 0.0, candidate.startPoint.y, candidate.startPoint.x),
+                                Waypoint(coordinateToTimestamp[candidate.endPoint.y to candidate.endPoint.x] ?: 0.0, candidate.endPoint.y, candidate.endPoint.x)
+                            )
+                        )
+                        intersections.add(intersection)
                     }
                 }
             }
         }
+
+        return IntersectionList(intersections)
     }
 
 
