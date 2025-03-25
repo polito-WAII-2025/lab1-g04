@@ -2,11 +2,14 @@ package it.polito.wa2.g04.services
 
 import kotlin.math.*
 import it.polito.wa2.g04.config.Config
-import it.polito.wa2.g04.models.output.*
 import it.polito.wa2.g04.models.Waypoint
 import it.polito.wa2.g04.models.Geofence
 import com.uber.h3core.H3Core
 import com.uber.h3core.LengthUnit
+import it.polito.wa2.g04.models.output.advanced.StraightLineDistance
+import it.polito.wa2.g04.models.output.base.MaxDistanceFromStart
+import it.polito.wa2.g04.models.output.base.MostFrequentedArea
+import it.polito.wa2.g04.models.output.base.WaypointsOutsideGeofence
 import org.locationtech.jts.geom.*
 import org.locationtech.jts.index.strtree.STRtree
 
@@ -214,5 +217,28 @@ class RouteAnalyzerService(private val config: Config) {
             }
             bestResolution
         }
+    }
+
+    /**
+     * Calculates the sum of the distances between every waypoint
+     * Please note: this metric has nothing to do with the length of the path to reach every waypoint,
+     * it only sums the straight-line distances between each point
+     *
+     * @param waypoints A list of waypoints representing points on the route.
+     * @return Total distance in km between every waypoint
+     */
+    fun calculateStraightLineDistance(waypoints: List<Waypoint>): StraightLineDistance {
+        if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints is empty")
+
+        val numWaypoints = waypoints.size
+        var totalDistance = 0.0
+
+        for (i in 0..numWaypoints - 2) {
+            val start = waypoints[i]
+            val end = waypoints[i + 1]
+            totalDistance += haversine(start.latitude, start.longitude, end.latitude, end.longitude)
+        }
+
+        return StraightLineDistance(totalDistance)
     }
 }
