@@ -2,6 +2,7 @@ package it.polito.wa2.g04
 
 import it.polito.wa2.g04.config.ConfigLoader
 import it.polito.wa2.g04.models.Geofence
+import it.polito.wa2.g04.models.output.advanced.DataReportAdvanced
 import it.polito.wa2.g04.models.output.base.DataReport
 import it.polito.wa2.g04.services.RouteAnalyzerService
 import it.polito.wa2.g04.utils.CSVParser
@@ -38,16 +39,23 @@ fun main(args: Array<String>) {
         waypointsOutsideGeofence = waypointsOutside
     )
 
-    routeAnalyzerService.findIntersections(waypoints)
+    val straightLineDistance = routeAnalyzerService.calculateStraightLineDistance(waypoints)
+    val intersections = routeAnalyzerService.findIntersections(waypoints)
+    val dataReportAdvanced = DataReportAdvanced(
+        //intersections = intersections,
+        straightLineDistance = straightLineDistance
+    )
+
 
     val jsonProvider = JSONProvider()
-    val jsonString = jsonProvider.toString(dataReport)
+    var jsonString = jsonProvider.toString(dataReport)
     println(jsonString)
-    println(routeAnalyzerService.calculateStraightLineDistance(waypoints))
+    println(straightLineDistance)
 
     val outFile = File(outputFilePath)
     outFile.writeText(jsonString)
 
     val outFileAdvanced = File(outputAdvancedFilePath)
-    outFileAdvanced.writeText(jsonString)   // This should be replaced with the correct JSON string
+    jsonString = jsonProvider.toString(dataReportAdvanced)
+    outFileAdvanced.writeText(jsonString)
 }

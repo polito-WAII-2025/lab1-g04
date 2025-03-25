@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class DataReportAdvanced (
-    val intersections: IntersectionList,
+    //val intersections: IntersectionList,
+    val straightLineDistance: StraightLineDistance,
 )

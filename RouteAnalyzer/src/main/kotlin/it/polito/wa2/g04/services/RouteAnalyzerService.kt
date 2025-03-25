@@ -6,6 +6,7 @@ import it.polito.wa2.g04.models.Waypoint
 import it.polito.wa2.g04.models.Geofence
 import com.uber.h3core.H3Core
 import com.uber.h3core.LengthUnit
+import it.polito.wa2.g04.models.output.advanced.StraightLineDistance
 import it.polito.wa2.g04.models.output.base.MaxDistanceFromStart
 import it.polito.wa2.g04.models.output.base.MostFrequentedArea
 import it.polito.wa2.g04.models.output.base.WaypointsOutsideGeofence
@@ -220,7 +221,7 @@ class RouteAnalyzerService(private val config: Config) {
      * @param waypoints A list of waypoints representing points on the route.
      * @return Total distance in km between every waypoint
      */
-    fun calculateStraightLineDistance(waypoints: List<Waypoint>): Double {
+    fun calculateStraightLineDistance(waypoints: List<Waypoint>): StraightLineDistance {
         if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints is empty")
 
         val numWaypoints = waypoints.size
@@ -232,6 +233,6 @@ class RouteAnalyzerService(private val config: Config) {
             totalDistance += haversine(start.latitude, start.longitude, end.latitude, end.longitude)
         }
 
-        return totalDistance
+        return StraightLineDistance(totalDistance)
     }
 }
