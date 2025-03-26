@@ -1,0 +1,199 @@
+{
+    "intersections": {
+        "intersections": [
+            {
+                "intersectionPoint": {
+                    "timestamp": 0.0,
+                    "latitude": 7.667441716783217,
+                    "longitude": 45.069001678321676
+                },
+                "segment1": {
+                    "point1": {
+                        "timestamp": 0.0,
+                        "latitude": 7.6676,
+                        "longitude": 45.06922
+                    },
+                    "point2": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66702,
+                        "longitude": 45.06842
+                    }
+                },
+                "segment2": {
+                    "point1": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66833,
+                        "longitude": 45.06869
+                    },
+                    "point2": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66719,
+                        "longitude": 45.06909
+                    }
+                }
+            },
+            {
+                "intersectionPoint": {
+                    "timestamp": 0.0,
+                    "latitude": 7.665281499999965,
+                    "longitude": 45.065959999999954
+                },
+                "segment1": {
+                    "point1": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66531,
+                        "longitude": 45.066
+                    },
+                    "point2": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66474,
+                        "longitude": 45.0652
+                    }
+                },
+                "segment2": {
+                    "point1": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66518,
+                        "longitude": 45.06582
+                    },
+                    "point2": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66576,
+                        "longitude": 45.06662
+                    }
+                }
+            },
+            {
+                "intersectionPoint": {
+                    "timestamp": 0.0,
+                    "latitude": 7.664717493562231,
+                    "longitude": 45.06518206008583
+                },
+                "segment1": {
+                    "point1": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66474,
+                        "longitude": 45.0652
+                    },
+                    "point2": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66405,
+                        "longitude": 45.06465
+                    }
+                },
+                "segment2": {
+                    "point1": {
+                        "timestamp": 0.0,
+                        "latitude": 7.6646,
+                        "longitude": 45.06502
+                    },
+                    "point2": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66518,
+                        "longitude": 45.06582
+                    }
+                }
+            },
+            {
+                "intersectionPoint": {
+                    "timestamp": 0.0,
+                    "latitude": 7.66242,
+                    "longitude": 45.06238
+                },
+                "segment1": {
+                    "point1": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66289,
+                        "longitude": 45.06304
+                    },
+                    "point2": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66242,
+                        "longitude": 45.06238
+                    }
+                },
+                "segment2": {
+                    "point1": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66242,
+                        "longitude": 45.06238
+                    },
+                    "point2": {
+                        "timestamp": 0.0,
+                        "latitude": 7.66185,
+                        "longitude": 45.06158
+                    }
+                }
+            },
+            {
+                "intersectionPoint": {
+                    "timestamp": 0.0,
+                    "latitude": 7.67888,
+                    "longitude": 45.06271
+                },
+                "segment1": {
+                    "point1": {
+                        "timestamp": 0.0,
+                        "latitude": 7.67875,
+                        "longitude": 45.06275
+                    },
+                    "point2": {
+                        "timestamp": 0.0,
+                        "latitude": 7.67888,
+                        "longitude": 45.06271
+                    }
+                },
+                "segment2": {
+                    "point1": {
+                        "timestamp": 0.0,
+                        "latitude": 7.67888,
+                        "longitude": 45.06271
+                    },
+                    "point2": {
+                        "timestamp": 0.0,
+                        "latitude": 7.67878,
+                        "longitude": 45.06281
+                    }
+                }
+            },
+            {
+                "intersectionPoint": {
+                    "timestamp": 0.0,
+                    "latitude": 7.68442,
+                    "longitude": 45.07084
+                },
+                "segment1": {
+                    "point1": {
+                        "timestamp": 0.0,
+                        "latitude": 7.68465,
+                        "longitude": 45.07081
+                    },
+                    "point2": {
+                        "timestamp": 0.0,
+                        "latitude": 7.68442,
+                        "longitude": 45.07084
+                    }
+                },
+                "segment2": {
+                    "point1": {
+                        "timestamp": 0.0,
+                        "latitude": 7.68442,
+                        "longitude": 45.07084
+                    },
+                    "point2": {
+                        "timestamp": 0.0,
+                        "latitude": 7.68317,
+                        "longitude": 45.07071
+                    }
+                }
+            }
+        ]
+    },
+    "straightLineDistance": {
+        "distanceKm": 8.713217538694742
+    },
+    "percentageOfWaypointsOutsideGeofence": {
+        "waypointsOutsideGeofence": 0.3917525773195876,
+        "waypointsInsideGeofence": 0.6082474226804124
+    }
+}
