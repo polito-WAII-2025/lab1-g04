@@ -8,12 +8,19 @@
 
 On a terminal:
 
-- <code>cd RouteAnalyzer </code>
-- <code>docker build -t route-analyzer .</code>
+```bash
+cd RouteAnalyzer
+docker build -t route-analyzer .
+```
 
 ### Running the container
 
+`<Input path>`: The path to the directory that contains both waypoints.csv and custom-parameters.yml.
+
+`<Output path>`: The path to the directory were you want to save the results.
+
 On a terminal:
 
-- <code>cd RouteAnalyzer</code>
-- <code>docker run -d -p 3003:80 -v \<Input path>:/app/inputFiles/ -v \<Output path>:/app/outputFiles route-analyzer</code>
+```bash
+docker run -d -p 8080:80 -v <Input path>:/app/inputFiles/ -v <Output path>:/app/outputFiles route-analyzer
+```
