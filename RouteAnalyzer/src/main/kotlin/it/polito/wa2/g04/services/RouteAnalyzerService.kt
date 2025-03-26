@@ -8,6 +8,7 @@ import it.polito.wa2.g04.models.output.advanced.intersections.Intersection
 import it.polito.wa2.g04.models.output.advanced.intersections.Segment
 import com.uber.h3core.H3Core
 import com.uber.h3core.LengthUnit
+import it.polito.wa2.g04.models.output.advanced.PercentageOfWaypointsOutsideGeofence
 import it.polito.wa2.g04.models.output.advanced.StraightLineDistance
 import it.polito.wa2.g04.models.output.advanced.intersections.IntersectionList
 import it.polito.wa2.g04.models.output.base.MaxDistanceFromStart
@@ -15,7 +16,6 @@ import it.polito.wa2.g04.models.output.base.MostFrequentedArea
 import it.polito.wa2.g04.models.output.base.WaypointsOutsideGeofence
 import org.locationtech.jts.geom.*
 import org.locationtech.jts.index.strtree.STRtree
-
 
 
 /**
@@ -63,7 +63,7 @@ class RouteAnalyzerService(private val config: Config) {
         if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints list cannot be empty")
 
         val h3EarthRadiusKm = 6378.137
-        val scalingFactor =  h3EarthRadiusKm / config.earthRadiusKm
+        val scalingFactor = h3EarthRadiusKm / config.earthRadiusKm
 
         // If the most frequented area radius is not provided, calculate it
         val mostFrequentedAreaRadiusKm =
@@ -150,18 +150,35 @@ class RouteAnalyzerService(private val config: Config) {
                 if (candIndex == index || candIndex == index - 1 || candIndex == index + 1) continue // Skip consecutive segments
 
                 if (segment.intersects(candidate)) {
-                    val intersectionPair = setOf(segment, candidate) // Set eliminates distinction between (A, B) and (B, A)
+                    val intersectionPair =
+                        setOf(segment, candidate) // Set eliminates distinction between (A, B) and (B, A)
                     if (uniqueIntersections.add(intersectionPair)) {
                         val intersectionPoint = segment.intersection(candidate).coordinate
                         val intersection = Intersection(
-                            intersectionPoint = Waypoint(0.0,intersectionPoint.y, intersectionPoint.x, ),
+                            intersectionPoint = Waypoint(0.0, intersectionPoint.y, intersectionPoint.x),
                             segment1 = Segment(
-                                Waypoint(coordinateToTimestamp[segment.startPoint.y to segment.startPoint.x] ?: 0.0, segment.startPoint.y, segment.startPoint.x),
-                                Waypoint(coordinateToTimestamp[segment.endPoint.y to segment.endPoint.x] ?: 0.0, segment.endPoint.y, segment.endPoint.x)
+                                Waypoint(
+                                    coordinateToTimestamp[segment.startPoint.y to segment.startPoint.x] ?: 0.0,
+                                    segment.startPoint.y,
+                                    segment.startPoint.x
+                                ),
+                                Waypoint(
+                                    coordinateToTimestamp[segment.endPoint.y to segment.endPoint.x] ?: 0.0,
+                                    segment.endPoint.y,
+                                    segment.endPoint.x
+                                )
                             ),
                             segment2 = Segment(
-                                Waypoint(coordinateToTimestamp[candidate.startPoint.y to candidate.startPoint.x] ?: 0.0, candidate.startPoint.y, candidate.startPoint.x),
-                                Waypoint(coordinateToTimestamp[candidate.endPoint.y to candidate.endPoint.x] ?: 0.0, candidate.endPoint.y, candidate.endPoint.x)
+                                Waypoint(
+                                    coordinateToTimestamp[candidate.startPoint.y to candidate.startPoint.x] ?: 0.0,
+                                    candidate.startPoint.y,
+                                    candidate.startPoint.x
+                                ),
+                                Waypoint(
+                                    coordinateToTimestamp[candidate.endPoint.y to candidate.endPoint.x] ?: 0.0,
+                                    candidate.endPoint.y,
+                                    candidate.endPoint.x
+                                )
                             )
                         )
                         intersections.add(intersection)
@@ -271,5 +288,20 @@ class RouteAnalyzerService(private val config: Config) {
         }
 
         return StraightLineDistance(totalDistance)
+    }
+
+    fun percentageOfWaypointsOutsideGeofence(
+        waypoints: List<Waypoint>,
+        geofence: Geofence
+    ): PercentageOfWaypointsOutsideGeofence {
+        val waypointsOutsideGeofenceCount = this.countWaypointsOutsideGeofence(waypoints, geofence).count
+        val totalWaypoints = waypoints.size.toDouble()
+        val waypointsOutsideGeofence = waypointsOutsideGeofenceCount / totalWaypoints
+        val waypointsInsideGeofence = 1 - waypointsOutsideGeofence
+
+        return PercentageOfWaypointsOutsideGeofence(
+            waypointsOutsideGeofence,
+            waypointsInsideGeofence
+        )
     }
 }

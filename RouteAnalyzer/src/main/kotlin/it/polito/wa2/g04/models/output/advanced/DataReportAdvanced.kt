@@ -7,4 +7,5 @@ import kotlinx.serialization.Serializable
 data class DataReportAdvanced (
     val intersections: IntersectionList,
     val straightLineDistance: StraightLineDistance,
+    val percentageOfWaypointsOutsideGeofence: PercentageOfWaypointsOutsideGeofence
 )

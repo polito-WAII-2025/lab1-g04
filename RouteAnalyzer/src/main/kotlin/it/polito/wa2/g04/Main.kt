@@ -43,9 +43,12 @@ fun main(args: Array<String>) {
 
     val intersectionList = routeAnalyzerService.findIntersections(waypoints)
     val straightLineDistance = routeAnalyzerService.calculateStraightLineDistance(waypoints)
+    val percentageOfWaypointsOutsideGeofence =
+        routeAnalyzerService.percentageOfWaypointsOutsideGeofence(waypoints, geofence)
     val dataReportAdvanced = DataReportAdvanced(
         intersections = intersectionList,
-        straightLineDistance = straightLineDistance
+        straightLineDistance = straightLineDistance,
+        percentageOfWaypointsOutsideGeofence = percentageOfWaypointsOutsideGeofence,
     )
 
     val jsonProvider = JSONProvider()
