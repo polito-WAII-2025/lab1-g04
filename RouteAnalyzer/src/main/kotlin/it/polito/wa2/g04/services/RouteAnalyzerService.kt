@@ -70,7 +70,7 @@ class RouteAnalyzerService(private val config: Config) {
             config.mostFrequentedAreaRadiusKm ?: calculateMaxDistanceFromStart(waypoints).distanceKm.let {
                 if (it < 1) 0.1 else floor(it / 10 * 10) / 10
             }
-        val scaledMostFrequentedAreaRadiusKm = (mostFrequentedAreaRadiusKm / scalingFactor).let {
+        val scaledMostFrequentedAreaRadiusKm = (mostFrequentedAreaRadiusKm * scalingFactor).let {
             floor(it * 10) / 10
         }
 
