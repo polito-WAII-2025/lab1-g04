@@ -126,8 +126,8 @@ class RouteAnalyzerService(private val config: Config) {
 
             geometryFactory.createLineString(
                 arrayOf(
-                    CoordinateXY(p1.latitude, p1.longitude),
-                    CoordinateXY(p2.latitude, p2.longitude)
+                    CoordinateXY(p1.longitude, p1.latitude),
+                    CoordinateXY(p2.longitude, p2.latitude)
                 )
             )
         }
