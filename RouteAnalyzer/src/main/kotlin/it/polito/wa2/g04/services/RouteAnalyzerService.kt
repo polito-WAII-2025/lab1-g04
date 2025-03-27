@@ -60,7 +60,7 @@ class RouteAnalyzerService(private val config: Config) {
      * @throws IllegalArgumentException If the waypoints list is empty or no waypoints are provided.
      */
     fun findMostFrequentedArea(waypoints: List<Waypoint>): MostFrequentedArea {
-        if (waypoints.isEmpty()) throw IllegalArgumentException("Waypoints list cannot be empty")
+        require(waypoints.isNotEmpty()) { "Waypoints list cannot be empty" }
 
         val h3EarthRadiusKm = 6378.137
         val scalingFactor = h3EarthRadiusKm / config.earthRadiusKm
@@ -89,7 +89,7 @@ class RouteAnalyzerService(private val config: Config) {
 
         // Find the most frequented H3 cell
         val mostFrequentedH3Index = frequencyMap.maxByOrNull { it.value }?.key
-            ?: throw IllegalArgumentException("No waypoints provided")
+            ?: throw IllegalStateException("Failed to determine most frequented area")
 
         // Calculate the centroid of the most frequented H3 cell
         val centroid = h3.cellToLatLng(mostFrequentedH3Index)
@@ -98,7 +98,7 @@ class RouteAnalyzerService(private val config: Config) {
         val waypointsInCell = waypointsInCells[mostFrequentedH3Index] ?: emptyList()
         val centralWaypoint = waypointsInCell.minByOrNull { waypoint ->
             haversine(centroid.lat, centroid.lng, waypoint.latitude, waypoint.longitude)
-        } ?: throw IllegalArgumentException("No waypoints provided")
+        } ?: throw IllegalStateException("No valid waypoint found in the most frequented cell")
 
         val frequency = frequencyMap[mostFrequentedH3Index] ?: 0
 
